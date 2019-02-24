@@ -11,10 +11,12 @@ export class ElectricImpService {
   private startUpdating = new Subject();
   private url = 'http://example.com';
 
+  updating = false;
   lastResponse: ElectricImpResponse;
 
   constructor(private httpClient: HttpClient) {
-    this.getUpdateListener().subscribe( (response) => {this.lastResponse = response; });
+    this.getUpdateListener().subscribe( (response) => {this.lastResponse = response; this.updating = false});
+    this.getStartUpdatingListener().subscribe( () => {this.updating = true; });
   }
 
   getUpdateListener(): Observable<ElectricImpResponse> {
@@ -26,6 +28,10 @@ export class ElectricImpService {
   }
 
   startUpdate() {
+    if ( this.updating ) {
+      return;
+    }
+    console.log('Updating State');
     this.startUpdating.next();
     this.httpClient.get<ElectricImpResponse>(this.url).subscribe( (response) => {
       this.stateUpdated.next(response);
@@ -35,6 +41,13 @@ export class ElectricImpService {
   changeTemp(newTemp: number) {
     this.startUpdating.next();
     this.httpClient.get<ElectricImpResponse>(`${this.url}?temp=${newTemp}`).subscribe((response) => {
+      this.stateUpdated.next(response);
+    });
+  }
+
+  changeMode(newMode: number) {
+    this.startUpdating.next();
+    this.httpClient.get<ElectricImpResponse>( `${this.url}?mode=${newMode}`).subscribe( (response) => {
       this.stateUpdated.next(response);
     });
   }

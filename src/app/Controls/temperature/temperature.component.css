@@ -1,5 +1,5 @@
 mat-card {
-  margin: auto;
+  margin: auto auto 1em;
 }
 
 mat-chip-list {

@@ -3,18 +3,21 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { TemperatureComponent } from './Controls/temperature/temperature.component';
-import {MatCardModule, MatChipsModule} from '@angular/material';
+import {MatButtonModule, MatCardModule, MatChipsModule} from '@angular/material';
 import {HttpClientModule} from '@angular/common/http';
+import { ModeComponent } from './Controls/mode/mode.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TemperatureComponent
+    TemperatureComponent,
+    ModeComponent
   ],
   imports: [
     BrowserModule,
     MatCardModule,
     MatChipsModule,
+    MatButtonModule,
     HttpClientModule
   ],
   providers: [],
