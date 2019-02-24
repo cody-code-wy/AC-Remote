@@ -52,4 +52,11 @@ export class ElectricImpService {
     });
   }
 
+  changeFanSpeed(newFanSpeed: number) {
+    this.startUpdating.next();
+    this.httpClient.get<ElectricImpResponse>( `${this.url}?speed=${newFanSpeed}`).subscribe( (response) => {
+      this.stateUpdated.next(response);
+    });
+  }
+
 }

@@ -1,0 +1,8 @@
+<mat-card>
+  <mat-card-title>Fan Speed</mat-card-title>
+  <mat-card-content>
+    <button mat-raised-button [color]="buttonColor(1)" (click)="onSpeedChange(1)">Low</button>
+    <button mat-raised-button [color]="buttonColor(2)" (click)="onSpeedChange(2)">Medium</button>
+    <button mat-raised-button [color]="buttonColor(3)" (click)="onSpeedChange(3)">High</button>
+  </mat-card-content>
+</mat-card>

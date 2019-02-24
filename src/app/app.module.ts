@@ -6,12 +6,14 @@ import { TemperatureComponent } from './Controls/temperature/temperature.compone
 import {MatButtonModule, MatCardModule, MatChipsModule} from '@angular/material';
 import {HttpClientModule} from '@angular/common/http';
 import { ModeComponent } from './Controls/mode/mode.component';
+import { FanSpeedComponent } from './Controls/fan-speed/fan-speed.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TemperatureComponent,
-    ModeComponent
+    ModeComponent,
+    FanSpeedComponent
   ],
   imports: [
     BrowserModule,
