@@ -8,6 +8,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class ElectricImpService {
   private stateUpdated = new Subject<ElectricImpResponse>();
+  private startUpdating = new Subject();
   private url = 'http://example.com';
 
   lastResponse: ElectricImpResponse;
@@ -20,13 +21,19 @@ export class ElectricImpService {
     return this.stateUpdated.asObservable();
   }
 
+  getStartUpdatingListener(): Observable<any> {
+    return this.startUpdating.asObservable();
+  }
+
   startUpdate() {
+    this.startUpdating.next();
     this.httpClient.get<ElectricImpResponse>(this.url).subscribe( (response) => {
       this.stateUpdated.next(response);
     });
   }
 
   changeTemp(newTemp: number) {
+    this.startUpdating.next();
     this.httpClient.get<ElectricImpResponse>(`${this.url}?temp=${newTemp}`).subscribe((response) => {
       this.stateUpdated.next(response);
     });

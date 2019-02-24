@@ -9,7 +9,8 @@ import {ElectricImpResponse} from '../../ElectricImpService/electric-imp-respons
   styleUrls: ['./temperature.component.css']
 })
 export class TemperatureComponent implements OnInit {
-  private electricImpSubscription: Subscription;
+  private electricImpStartUpdateSubscription: Subscription;
+  private electricImpUpdateSubscription: Subscription;
 
   currentState: ElectricImpResponse;
   loading = true;
@@ -18,7 +19,10 @@ export class TemperatureComponent implements OnInit {
   constructor(private electricImpService: ElectricImpService) { }
 
   ngOnInit() {
-    this.electricImpSubscription = this.electricImpService.getUpdateListener().subscribe( (response) => {
+    this.electricImpStartUpdateSubscription = this.electricImpService.getStartUpdatingListener().subscribe( () => {
+      this.updating = true;
+    });
+    this.electricImpUpdateSubscription = this.electricImpService.getUpdateListener().subscribe( (response) => {
       this.currentState = response;
       this.loading = false;
       this.updating = false;
@@ -28,14 +32,12 @@ export class TemperatureComponent implements OnInit {
 
   onClickTempUp() {
     if ( !this.updating ) {
-      this.updating = true;
       this.electricImpService.changeTemp(this.currentState.temp + 1);
     }
   }
 
   onClickTempDown() {
     if ( !this.updating ) {
-      this.updating = true;
       this.electricImpService.changeTemp(this.currentState.temp - 1);
     }
   }
