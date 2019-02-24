@@ -1,0 +1,7 @@
+<mat-card>
+  <mat-chip-list>
+    <mat-chip (click)="onClickTempDown()">-</mat-chip>
+    <mat-chip>{{ currentState?.temp }}</mat-chip>
+    <mat-chip (click)="onClickTempUp()">+</mat-chip>
+  </mat-chip-list>
+</mat-card>

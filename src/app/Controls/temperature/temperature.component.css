@@ -1,0 +1,10 @@
+mat-card {
+  margin: auto;
+}
+
+mat-chip-list {
+  display: flex;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+}
