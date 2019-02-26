@@ -11,12 +11,17 @@ export class ElectricImpService {
   private startUpdating = new Subject();
   private url = 'http://example.com';
 
-  updating = false;
+  updating = true;
   lastResponse: ElectricImpResponse;
 
   constructor(private httpClient: HttpClient) {
     this.getUpdateListener().subscribe( (response) => {this.lastResponse = response; this.updating = false});
     this.getStartUpdatingListener().subscribe( () => {this.updating = true; });
+    this.httpClient.get<{electricimpurl: string}>('/assets/app-config.json').subscribe((data) => {
+      this.url = data.electricimpurl;
+      this.updating = false;
+      this.startUpdate();
+    });
   }
 
   getUpdateListener(): Observable<ElectricImpResponse> {
