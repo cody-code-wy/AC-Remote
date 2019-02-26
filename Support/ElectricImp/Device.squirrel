@@ -1,0 +1,93 @@
+function serialRead(){}
+
+local arduino = hardware.uart57;
+arduino.configure(9600, 8, PARITY_NONE, 1, NO_RX && NO_CTSRTS);
+
+arduino.write("4444444444444444"); // set temp to 16
+local temp = 16;
+
+arduino.write("6") // set mode to cool
+local mode = 0; // 0 = cool
+                // 1 = Econ
+                // 2 = Fan Only
+
+arduino.write("222") // Set speed to Low
+local speed = 1; // 0 = auto
+                 // 1 = Low
+                 // 2 = Med
+                 // 3 = High
+
+agent.on("temp", function(c)
+{
+    if (mode == 2) {
+        agent.send("temp", temp)
+        return; //Can't change temp while in fan mode.
+    }
+    if (c < 16) {
+        server.log("Correcting Underrun");
+        c = 16;
+    }
+    if (c > 32) {
+        server.log("Correcting Overrun");
+        c = 32;
+    }
+    server.log("setting to temp " + c);
+    while ( c < temp ) {
+        temp--;
+        arduino.write("4")
+    }
+    while ( c > temp ) {
+        temp++;
+        arduino.write("5")
+    }
+    agent.send("temp", temp); //Update with real value
+});
+
+agent.on("mode", function(c)
+{
+    server.log("setting to mode " + c);
+    if ((c >= 0) && ( c <= 2) && (mode!=c)) {
+        mode=c
+        c += 6
+        arduino.write(c);
+    }
+    agent.send("mode", mode); //Update with real value
+});
+
+agent.on("speed", function(c)
+{
+    server.log("setting to speed " + c);
+    if (c == 0) {
+        server.log("Cannot set speed to 0...")
+    } else {
+        if (c < 1){
+            server.log("correcting underrun");
+            c=1;
+        }
+        if (c > 3){
+            server.log("correcting overrun");
+            c=3
+        }
+        while ( c < speed ) {
+            speed--;
+            arduino.write(2);
+        }
+        while ( c > speed ) {
+            speed++;
+            arduino.write(3);
+        }
+    }
+    agent.send("speed", speed);
+});
+
+agent.on("restore", function(c){
+    agent.send("temp", temp);
+    agent.send("mode", mode);
+    agent.send("speed", speed);
+});
+
+///////////
+// Setup //
+///////////
+server.log("Imp Connected!"); // A warm greeting to indicate we've begun
+agent.send("restore", true);

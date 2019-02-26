@@ -1,0 +1,62 @@
+server.log("SetTarget " + http.agenturl() + "?key=value");
+
+local temp = 18;
+local mode = 1;
+local speed = 3;
+
+function requestHandler(request, response) {
+  response.header("Access-Control-Allow-Origin", "*"); //API Allow all origins
+  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  response.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+  try {
+      local body = "";
+    if ("temp" in request.query) {
+        server.log("Temp:" + request.query.temp);
+        temp=request.query.temp.tointeger();
+        if ( temp < 16 ) {
+            temp = 16;
+        }
+        if ( temp > 32 ) {
+            temp = 32;
+        }
+        device.send("temp",temp);
+    }
+    if ("mode" in request.query) {
+        server.log("Mode:" + request.query.mode);
+        mode=request.query.mode.tointeger();
+        device.send("mode",mode);
+    }
+    if ("speed" in request.query) {
+        server.log("Speed:" + request.query.speed);
+        speed=request.query.speed.tointeger()
+        device.send("speed",speed);
+    }
+    // send a response back saying everything was OK.
+    body += "{\"temp\":" + temp + ",\"mode\":" + mode + ",\"speed\":" + speed + "}"
+    response.send(200, body);
+  } catch (ex) {
+    response.send(500, "Internal Server Error: " + ex);
+  }
+}
+
+http.onrequest(requestHandler);
+
+device.on("restore", function(c){
+    device.send("temp", temp);
+    device.send("mode", mode);
+    device.send("speed", speed);
+});
+
+device.on("temp", function(c){
+    temp=c;
+});
+
+device.on("mode", function(c){
+    mode=c;
+});
+
+device.on("speed", function(c){
+    speed=c;
+})
+
+device.send("restore", true); //get values from device, we just got reset!
